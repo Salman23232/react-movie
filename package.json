@@ -2,7 +2,6 @@
   "name": "react-movie-app",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://nvanha.github.io/react-movie-app/",
   "dependencies": {
     "@supabase/supabase-js": "^2.103.0",
     "@testing-library/jest-dom": "^5.11.4",
