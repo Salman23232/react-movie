@@ -1,57 +1,49 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from 'react'
+import SwiperCore, { Autoplay, EffectFade } from 'swiper'
+import { Swiper, SwiperSlide } from 'swiper/react'
 
-import SwiperCore, { Autoplay } from "swiper";
-import { Swiper, SwiperSlide } from "swiper/react";
+import Button, { OutlineButton } from './../button/Button'
+import Modal, { ModalContent } from './../modal/Modal'
 
-import Button, { OutlineButton } from "./../button/Button";
-import Modal, { ModalContent } from "./../modal/Modal";
+import tmdbApi, { category, movieType } from './../../api/tmdbApi'
+import apiConfig from './../../api/apiConfig'
 
-import tmdbApi, { category, movieType } from "./../../api/tmdbApi";
-import apiConfig from "./../../api/apiConfig";
-
-import "./hero-slide.scss";
-import { useHistory } from "react-router";
-
-import * as Config from "./../../constants/Config";
+import './hero-slide.scss'
+import { useHistory } from 'react-router'
+import * as Config from './../../constants/Config'
 
 const HeroSlide = () => {
-  SwiperCore.use([Autoplay]);
+  SwiperCore.use([Autoplay, EffectFade])
 
-  const [movieItems, setMovieItems] = useState([]);
+  const [movieItems, setMovieItems] = useState([])
 
   useEffect(() => {
     const getMovies = async () => {
-      const params = { page: 1 };
+      const params = { page: 1 }
       try {
-        const response = await tmdbApi.getMoviesList(movieType.popular, {
-          params,
-        });
-        setMovieItems(response.results.slice(0, 4));
-        console.log(response);
+        const response = await tmdbApi.getMoviesList(movieType.popular, { params })
+        setMovieItems(response.results.slice(0, 5))
       } catch {
-        console.log("error");
+        console.log('error')
       }
-    };
-    getMovies();
-  }, []);
+    }
+    getMovies()
+  }, [])
 
   return (
     <div className="hero-slide">
       <Swiper
-        modules={[Autoplay]}
+        modules={[Autoplay, EffectFade]}
+        effect={'fade'} // Adds a high-end cross-fade effect
         grabCursor={true}
         spaceBetween={0}
         slidesPerView={1}
-        autoplay={{ delay: 4000 }}
+        autoplay={{ delay: 5000, disableOnInteraction: false }}
       >
         {movieItems.map((item, index) => (
           <SwiperSlide key={index}>
             {({ isActive }) => (
-              // eslint-disable-next-line jsx-a11y/alt-text
-              <HeroSlideItem
-                item={item}
-                className={`${isActive ? "active" : ""}`}
-              />
+              <HeroSlideItem item={item} className={`${isActive ? 'active' : ''}`} />
             )}
           </SwiperSlide>
         ))}
@@ -60,34 +52,29 @@ const HeroSlide = () => {
         <TrailerModal key={index} item={item} />
       ))}
     </div>
-  );
-};
+  )
+}
 
 const HeroSlideItem = (props) => {
-  let history = useHistory();
-
-  const item = props.item;
+  let history = useHistory()
+  const item = props.item
 
   const background = apiConfig.originalImage(
     item.backdrop_path ? item.backdrop_path : item.poster_path
-  );
+  )
 
   const setModalActive = async () => {
-    const modal = document.querySelector(`#modal_${item.id}`);
-
-    const videos = await tmdbApi.getVideos(category.movie, item.id);
+    const modal = document.querySelector(`#modal_${item.id}`)
+    const videos = await tmdbApi.getVideos(category.movie, item.id)
 
     if (videos.results.length > 0) {
-      const videoSrc = "https://www.youtube.com/embed/" + videos.results[0].key;
-      modal
-        .querySelector(".modal__content > iframe")
-        .setAttribute("src", videoSrc);
+      const videoSrc = 'https://www.youtube.com/embed/' + videos.results[0].key
+      modal.querySelector('.modal__content > iframe').setAttribute('src', videoSrc)
     } else {
-      modal.querySelector(".modal__content").innerHTML = "No trailer";
+      modal.querySelector('.modal__content').innerHTML = 'No trailer available'
     }
-
-    modal.classList.toggle("active");
-  };
+    modal.classList.toggle('active')
+  }
 
   return (
     <div
@@ -99,33 +86,29 @@ const HeroSlideItem = (props) => {
           <h2 className="title">{item.title}</h2>
           <div className="overview">{item.overview}</div>
           <div className="btns">
-            <Button
-              onClick={() =>
-                history.push(`/${Config.HOME_PAGE}/movie/` + item.id)
-              }
-            >
+            <Button className="btn-main" onClick={() => history.push(`/movie/` + item.id)}>
               Watch now
             </Button>
-            <OutlineButton onClick={setModalActive}>
-              Watch trailer
+            <OutlineButton className="btn-outline" onClick={setModalActive}>
+              View Trailer
             </OutlineButton>
           </div>
         </div>
 
         <div className="hero-slide__item__content__poster">
-          <img src={apiConfig.w500Image(item.poster_path)} alt="" />
+          <div className="poster-wrapper">
+            <img src={apiConfig.w500Image(item.poster_path)} alt={item.title} />
+          </div>
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
 const TrailerModal = (props) => {
-  const item = props.item;
-
-  const iframeRef = useRef(null);
-
-  const onClose = () => iframeRef.current.setAttribute("src", "");
+  const item = props.item
+  const iframeRef = useRef(null)
+  const onClose = () => iframeRef.current.setAttribute('src', '')
 
   return (
     <Modal active={false} id={`modal_${item.id}`}>
@@ -135,10 +118,11 @@ const TrailerModal = (props) => {
           width="100%"
           height="500px"
           title="trailer"
+          style={{ border: 'none', borderRadius: '15px' }}
         ></iframe>
       </ModalContent>
     </Modal>
-  );
-};
+  )
+}
 
-export default HeroSlide;
+export default HeroSlide

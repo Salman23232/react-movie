@@ -1,13 +1,13 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React from 'react'
+import { Link } from 'react-router-dom'
 
-import { OutlineButton } from "../components/button/Button";
-import HeroSlide from "../components/hero-slide/HeroSlide";
-import MovieList from "../components/movie-list/MovieList";
+import { OutlineButton } from '../components/button/Button'
+import HeroSlide from '../components/hero-slide/HeroSlide'
+import MovieList from '../components/movie-list/MovieList'
 
-import { category, movieType, tvType } from "../api/tmdbApi";
+import { category, movieType, tvType } from '../api/tmdbApi'
 
-import * as Config from "./../constants/Config";
+import * as Config from './../constants/Config'
 
 const Home = () => {
   return (
@@ -18,7 +18,7 @@ const Home = () => {
         <div className="section mb-3">
           <div className="section__header mb-2">
             <h2>Trending Movies</h2>
-            <Link to={`/${Config.HOME_PAGE}/movie`}>
+            <Link to={`/movie`}>
               <OutlineButton className="small">View more</OutlineButton>
             </Link>
           </div>
@@ -28,7 +28,7 @@ const Home = () => {
         <div className="section mb-3">
           <div className="section__header mb-2">
             <h2>Top Rated Movies</h2>
-            <Link to={`/${Config.HOME_PAGE}/movie`}>
+            <Link to={`/movie`}>
               <OutlineButton className="small">View more</OutlineButton>
             </Link>
           </div>
@@ -38,7 +38,7 @@ const Home = () => {
         <div className="section mb-3">
           <div className="section__header mb-2">
             <h2>Trending TV</h2>
-            <Link to={`/${Config.HOME_PAGE}/tv`}>
+            <Link to={`/tv`}>
               <OutlineButton className="small">View more</OutlineButton>
             </Link>
           </div>
@@ -48,7 +48,7 @@ const Home = () => {
         <div className="section mb-3">
           <div className="section__header mb-2">
             <h2>Top Rated TV</h2>
-            <Link to={`/${Config.HOME_PAGE}/tv`}>
+            <Link to={`/tv`}>
               <OutlineButton className="small">View more</OutlineButton>
             </Link>
           </div>
@@ -56,7 +56,7 @@ const Home = () => {
         </div>
       </div>
     </>
-  );
-};
+  )
+}
 
-export default Home;
+export default Home

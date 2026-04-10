@@ -1,13 +1,11 @@
-import React from "react";
+import React from 'react'
 
-import "./footer.scss";
+import './footer.scss'
 
-import { Link } from "react-router-dom";
+import { Link } from 'react-router-dom'
 
-import bg from "./../../assets/footer-bg.jpg";
-import logo from "./../../assets/logo.png";
-
-import * as Config from "./../../constants/Config";
+import bg from './../../assets/footer-bg.jpg'
+import logo from './../../assets/logo.png'
 
 const Footer = () => {
   return (
@@ -16,32 +14,32 @@ const Footer = () => {
         <div className="footer__content__logo">
           <div className="logo">
             <img src={logo} alt="logo" />
-            <Link to={`/${Config.HOME_PAGE}`}>hMovies</Link>
+            <Link to={`/`}>hMovies</Link>
           </div>
         </div>
 
         <div className="footer__content__menus">
           <div className="footer__content__menu">
-            <Link to={`/${Config.HOME_PAGE}`}>Home</Link>
-            <Link to={`/${Config.HOME_PAGE}`}>Contact us</Link>
-            <Link to={`/${Config.HOME_PAGE}`}>Term of service</Link>
-            <Link to={`/${Config.HOME_PAGE}`}>About us</Link>
+            <Link to={`/`}>Home</Link>
+            <Link to={`/`}>Contact us</Link>
+            <Link to={`/`}>Term of service</Link>
+            <Link to={`/`}>About us</Link>
           </div>
           <div className="footer__content__menu">
-            <Link to={`/${Config.HOME_PAGE}`}>Live</Link>
-            <Link to={`/${Config.HOME_PAGE}`}>FAQ</Link>
-            <Link to={`/${Config.HOME_PAGE}`}>Premium</Link>
-            <Link to={`/${Config.HOME_PAGE}`}>Privacy policy</Link>
+            <Link to={`/`}>Live</Link>
+            <Link to={`/`}>FAQ</Link>
+            <Link to={`/`}>Premium</Link>
+            <Link to={`/`}>Privacy policy</Link>
           </div>
           <div className="footer__content__menu">
-            <Link to={`/${Config.HOME_PAGE}`}>You must watch</Link>
-            <Link to={`/${Config.HOME_PAGE}`}>Recent release</Link>
-            <Link to={`/${Config.HOME_PAGE}`}>Top IMDB</Link>
+            <Link to={`/`}>You must watch</Link>
+            <Link to={`/`}>Recent release</Link>
+            <Link to={`/`}>Top IMDB</Link>
           </div>
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Footer;
+export default Footer
