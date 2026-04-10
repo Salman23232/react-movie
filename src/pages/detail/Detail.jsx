@@ -1,32 +1,57 @@
 import React, { useEffect, useState } from 'react'
-import { useParams } from 'react-router'
+import { useParams, useNavigate } from 'react-router-dom'
 import tmdbApi from './../../api/tmdbApi'
 import apiConfig from '../../api/apiConfig'
-
 import './detail.scss'
 import CastList from './CastList'
 import VideoList from './VideoList'
 import MovieList from './../../components/movie-list/MovieList'
+import { useUser } from '@clerk/clerk-react'
+import { createClient } from '@supabase/supabase-js'
+
+// INITIALIZE SUPABASE
+const supabase = createClient(
+  process.env.REACT_APP_SUPABASE_URL,
+  process.env.REACT_APP_SUPABASE_KEY
+)
 
 const Detail = () => {
   const { category, id } = useParams()
+  const navigate = useNavigate()
+  const { user } = useUser()
+
   const [item, setItem] = useState(null)
-  // Inside your Movie Detail / Watch page
+  const [hasAccess, setHasAccess] = useState(false)
+  const [loading, setLoading] = useState(true)
+
+  // 1. SUBSCRIPTION CHECK LOGIC
   useEffect(() => {
     const checkSub = async () => {
-      const { data } = await supabase
-        .from('subscriptions')
-        .select('status')
-        .eq('clerk_id', user.id)
-        .single()
+      if (!user) {
+        setLoading(false)
+        return
+      }
 
-      if (data?.status === 'active') {
-        setHasAccess(true)
+      try {
+        const { data, error } = await supabase
+          .from('subscriptions')
+          .select('status')
+          .eq('clerk_id', user.id)
+          .single()
+
+        if (data?.status === 'active') {
+          setHasAccess(true)
+        }
+      } catch (err) {
+        console.error('Subscription check failed:', err)
+      } finally {
+        setLoading(false)
       }
     }
-    if (user) checkSub()
+    checkSub()
   }, [user])
 
+  // 2. FETCH MOVIE DETAILS
   useEffect(() => {
     const getDetail = async () => {
       const response = await tmdbApi.detail(category, id, { params: {} })
@@ -36,7 +61,6 @@ const Detail = () => {
     getDetail()
   }, [category, id])
 
-  // vidsrc.cc for the main player
   const vidsrcUrl =
     category === 'movie'
       ? `https://vidsrc.cc/v2/embed/movie/${id}`
@@ -46,7 +70,6 @@ const Detail = () => {
     <div className="detail-page-wrapper" style={{ backgroundColor: '#141414', color: '#fff' }}>
       {item && (
         <>
-          {/* CINEMATIC BACKDROP */}
           <div
             className="banner"
             style={{
@@ -58,7 +81,6 @@ const Detail = () => {
             <div className="banner__overlay"></div>
           </div>
 
-          {/* CONTENT & TRAILER ASIDE SECTION */}
           <div className="movie-content container mb-3">
             <div className="movie-content__left">
               <div
@@ -99,7 +121,7 @@ const Detail = () => {
             </div>
           </div>
 
-          {/* 3. MAIN CINEMA PLAYER */}
+          {/* 3. MAIN CINEMA PLAYER WITH ACCESS CONTROL */}
           <div className="container mt-5">
             <div className="section__header mb-3">
               <h2 style={{ fontSize: '2rem', fontWeight: '700' }}>Streaming Now</h2>
@@ -113,18 +135,46 @@ const Detail = () => {
                 boxShadow: '0 10px 30px rgba(0,0,0,0.9)',
                 background: '#000',
                 aspectRatio: '16/9',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                position: 'relative',
               }}
             >
-              <iframe
-                src={vidsrcUrl}
-                title="LumiHive Player"
-                allowFullScreen
-                sandbox="allow-forms allow-pointer-lock allow-same-origin allow-scripts allow-top-navigation allow-popups-to-escape-sandbox"
-                style={{ width: '100%', height: '100%', border: 'none' }}
-              />
+              {hasAccess ? (
+                <iframe
+                  src={vidsrcUrl}
+                  title="LumiHive Player"
+                  allowFullScreen
+                  sandbox="allow-forms allow-pointer-lock allow-same-origin allow-scripts allow-top-navigation allow-popups-to-escape-sandbox"
+                  style={{ width: '100%', height: '100%', border: 'none' }}
+                />
+              ) : (
+                <div style={{ textAlign: 'center', padding: '20px' }}>
+                  <h3 style={{ marginBottom: '20px' }}>Premium Content</h3>
+                  <p style={{ marginBottom: '30px', color: '#ccc' }}>
+                    You need an active subscription to watch this movie.
+                  </p>
+                  <button
+                    onClick={() => navigate('/subscribe')}
+                    style={{
+                      padding: '12px 30px',
+                      backgroundColor: '#e50914',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '4px',
+                      fontWeight: 'bold',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    Subscribe for 99 BDT
+                  </button>
+                </div>
+              )}
             </div>
           </div>
-          {/* RATING SECTION - NETFLIX STYLE */}
+
+          {/* RATING SECTION */}
           <div className="container" style={{ padding: '50px' }}>
             <div
               className="section__header mb-3"
@@ -148,7 +198,7 @@ const Detail = () => {
               style={{
                 background: 'linear-gradient(135deg, rgba(45,45,45,1) 0%, rgba(20,20,20,1) 100%)',
                 padding: '2.5rem',
-                borderRadius: '4px', // Netflix uses sharper corners for a premium feel
+                borderRadius: '4px',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
@@ -159,7 +209,6 @@ const Detail = () => {
                 overflow: 'hidden',
               }}
             >
-              {/* Aesthetic Background "Glow" */}
               <div
                 style={{
                   position: 'absolute',
@@ -241,7 +290,6 @@ const Detail = () => {
                 </div>
               </div>
 
-              {/* Netflix-style "Popularity" Tag */}
               <div
                 style={{
                   padding: '8px 16px',
@@ -258,7 +306,7 @@ const Detail = () => {
               </div>
             </div>
           </div>
-          {/* 5. RECOMMENDATIONS */}
+
           <div className="container" style={{ padding: '50px', marginBottom: '50px' }}>
             <div className="section__header mb-3">
               <h2 style={{ fontSize: '2rem', fontWeight: '700' }}>More Like This</h2>
