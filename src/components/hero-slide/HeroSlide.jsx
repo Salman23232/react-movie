@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import SwiperCore, { Autoplay, EffectFade } from 'swiper'
 import { Swiper, SwiperSlide } from 'swiper/react'
+import { useNavigate } from 'react-router-dom'
 
 import Button, { OutlineButton } from './../button/Button'
 import Modal, { ModalContent } from './../modal/Modal'
@@ -9,8 +10,6 @@ import tmdbApi, { category, movieType } from './../../api/tmdbApi'
 import apiConfig from './../../api/apiConfig'
 
 import './hero-slide.scss'
-import { useHistory } from 'react-router'
-import * as Config from './../../constants/Config'
 
 const HeroSlide = () => {
   SwiperCore.use([Autoplay, EffectFade])
@@ -24,7 +23,7 @@ const HeroSlide = () => {
         const response = await tmdbApi.getMoviesList(movieType.popular, { params })
         setMovieItems(response.results.slice(0, 5))
       } catch {
-        console.log('error')
+        console.log('error fetching movies')
       }
     }
     getMovies()
@@ -34,7 +33,7 @@ const HeroSlide = () => {
     <div className="hero-slide">
       <Swiper
         modules={[Autoplay, EffectFade]}
-        effect={'fade'} // Adds a high-end cross-fade effect
+        effect={'fade'}
         grabCursor={true}
         spaceBetween={0}
         slidesPerView={1}
@@ -56,7 +55,7 @@ const HeroSlide = () => {
 }
 
 const HeroSlideItem = (props) => {
-  let history = useHistory()
+  const navigate = useNavigate()
   const item = props.item
 
   const background = apiConfig.originalImage(
@@ -86,7 +85,7 @@ const HeroSlideItem = (props) => {
           <h2 className="title">{item.title}</h2>
           <div className="overview">{item.overview}</div>
           <div className="btns">
-            <Button className="btn-main" onClick={() => history.push(`/movie/` + item.id)}>
+            <Button className="btn-main" onClick={() => navigate(`/movie/${item.id}`)}>
               Watch now
             </Button>
             <OutlineButton className="btn-outline" onClick={setModalActive}>

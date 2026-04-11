@@ -1,10 +1,17 @@
-import React from "react";
-import ReactDOM from "react-dom";
-import App from "./App";
+import { ClerkProvider } from '@clerk/nextjs'
+import './globals.scss' // Move your App.scss or main CSS here
 
-ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-  document.getElementById("root")
-);
+export const metadata = {
+  title: 'Next Movie App',
+  description: 'Movie streaming app built with Next.js',
+}
+
+export default function RootLayout({ children }) {
+  return (
+    <ClerkProvider>
+      <html lang="en">
+        <body>{children}</body>
+      </html>
+    </ClerkProvider>
+  )
+}
